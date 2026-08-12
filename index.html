@@ -16,13 +16,16 @@ header{height:52px;display:flex;align-items:center;justify-content:space-between
 .subtitle{font-size:11px;color:var(--muted)}
 .theme{border:0;background:var(--card);color:var(--text);border-radius:50%;width:42px;height:42px;font-size:21px;box-shadow:0 2px 10px #0002}
 .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;margin:10px 0;box-shadow:0 5px 18px #0000000d}
-#problem{min-height:230px;background:var(--result);border-radius:14px;padding:18px;display:flex;align-items:center;justify-content:center;overflow:auto}
+#problem{min-height:230px;background:var(--result);border-radius:14px;padding:18px;display:flex;align-items:center;justify-content:center;
+  overflow:auto;
+  font-weight: 600;
+}
 #problem,
 #problem * {
     font-family: "Times New Roman", Times, serif !important;
     font-weight: bold !important;
 }
- .math{font:22px "Courier New",monospace;line-height:1.35;white-space:pre;text-align:right}
+.math{font:22px "Courier New",monospace;line-height:1.35;white-space:pre;text-align:right}
 .controls{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .control label{display:flex;justify-content:space-between;font-size:13px;font-weight:bold;margin-bottom:8px}
 .value{color:var(--primary)}
@@ -53,19 +56,19 @@ button:disabled{opacity:.45}
 
 <section class="card">
  <div class="actions">
-  <button class="action" onclick="generate(false)">Generate</button>
-  <button class="action secondary" id="blankBtn" onclick="animateBlanks()">Generate blanks</button>
+  <button class="action" onclick="generate(false)">توليد العملية</button>
+  <button class="action secondary" id="blankBtn" onclick="animateBlanks()">توليد بالفراغ</button>
  </div>
 </section>
 
 <section class="card">
  <div class="controls">
   <div class="control">
-   <label>Columns <span class="value" id="colValue">3</span></label>
+   <label>عدد الأرقام <span class="value" id="colValue">3</span></label>
    <input id="columns" type="range" min="2" max="8" value="3">
   </div>
   <div class="control">
-   <label>Rows <span class="value" id="rowValue">2</span></label>
+   <label>عدد الطبقات  <span class="value" id="rowValue">2</span></label>
    <input id="rows" type="range" min="2" max="4" value="2">
   </div>
  </div>
@@ -76,25 +79,25 @@ button:disabled{opacity:.45}
     <label class="op">
       <input type="radio" name="op" value="add" checked
              onclick="window.open('https://math17-create.github.io/Pracmath-App/', '_self')">
-      Addition +
+      الجمع +
     </label>
 
     <label class="op">
       <input type="radio" name="op" value="sub"
              >
-      Subtraction −
+      الطرح −
     </label>
 
     <label class="op">
       <input type="radio" name="op" value="mul"
             >
-      Multipli... ×
+      الضرب ×
     </label>
 
     <label class="op">
       <input type="radio" name="op" value="div"
              >
-      Division ÷
+      القسمة ÷
     </label>
   </div>
 </section>
