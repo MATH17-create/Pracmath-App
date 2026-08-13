@@ -50,7 +50,7 @@ button:disabled{opacity:.45}
 <div class="app">
 <header>
  <div><div class="title">PracMath</div><div class="subtitle">Math practice generator</div></div>
- <button class="theme" id="themeBtn" onclick="toggleTheme()" aria-label="Theme">☀️</button>
+ <button class="theme" id="themeBtn" onclick="toggleTheme()" aria-label="Theme">🔆</button>
 </header>
 
 <section class="card">
@@ -237,7 +237,7 @@ document.querySelectorAll('input[name="op"]').forEach(x=>x.onchange=()=>{updateU
 function toggleTheme(){
  document.body.classList.toggle("dark");
  const dark=document.body.classList.contains("dark");
- $("themeBtn").textContent=dark?"☀️":"🌙";
+ $("themeBtn").textContent=dark?"🔆":"🌙";
  localStorage.setItem("pracmath-theme",dark?"dark":"light");
 }
 if(localStorage.getItem("pracmath-theme")==="dark"){
