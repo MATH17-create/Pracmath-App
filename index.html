@@ -243,7 +243,18 @@ function toggleTheme(){
 if(localStorage.getItem("pracmath-theme")==="dark"){
  document.body.classList.add("dark");$("themeBtn").textContent="☀️";
 }
+let refreshCount = Number(sessionStorage.getItem("refreshCount") || 0);
 
+if (refreshCount < 3) {
+    refreshCount++;
+    sessionStorage.setItem("refreshCount", refreshCount);
+
+    setTimeout(() => {
+        location.reload();
+    }, 500);
+} else {
+    sessionStorage.removeItem("refreshCount");
+}
 updateUI();
 generate(false);
 </script>
