@@ -2,273 +2,535 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>HLS Player</title>
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0">
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+<title>Sports Channels</title>
 
 <style>
-* {
-    box-sizing: border-box;
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
-body {
-    margin: 0;
-    background: #111;
-    color: white;
-    font-family: Arial, sans-serif;
+body{
+    background:#0b0d12;
+    color:#fff;
+    font-family:Arial, sans-serif;
 }
 
-/* المشغل */
-.player {
-    position: relative;
-    width: 100%;
-    max-width: 1000px;
-    margin: 20px auto;
-    background: #000;
-    overflow: hidden;
+/* ===== Header ===== */
+
+.header{
+    height:70px;
+    background:#11151d;
+
+    display:flex;
+    align-items:center;
+
+    padding:0 16px;
+
+    position:sticky;
+    top:0;
+    z-index:10;
+
+    border-bottom:1px solid #252a34;
 }
 
-video {
-    width: 100%;
-    height: auto;
-    display: block;
-    background: #000;
+.back{
+    font-size:34px;
+    margin-right:20px;
+    color:#fff;
 }
 
-/* زر Fullscreen */
-.fullscreen-btn {
-    position: absolute;
-    right: 8px;
-    top: 8px;
-
-    width: 35px;
-    height: 35px;
-    opacity: 60%;
-
-    border: none;
-    border-radius: 5px;
-
-    background: rgba(0,0,0,0.75);
-    color: white;
-
-    font-size: 25px;
-    cursor: pointer;
-
-    z-index: 10;
+.title{
+    font-size:22px;
+    font-weight:bold;
+    flex:1;
 }
 
-.fullscreen-btn:active {
-    transform: scale(0.92);
+.search{
+    font-size:30px;
 }
 
-#status {
-    text-align: center;
-    padding: 10px;
-    font-size: 14px;
+/* ===== Main ===== */
+
+.container{
+    padding:14px 10px 30px;
 }
+
+/* ===== Section ===== */
+
+.section-title{
+    font-size:18px;
+    font-weight:bold;
+
+    margin:8px 4px 14px;
+
+    color:#e8e8e8;
+}
+
+/* ===== Grid ===== */
+
+.channels{
+    display:grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap:12px;
+}
+
+/* ===== Card ===== */
+
+.channel{
+    background:#171b23;
+
+    border:1px solid #292f3a;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    text-decoration:none;
+
+    color:#fff;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.35);
+
+    transition:
+        transform .15s,
+        background .15s;
+}
+
+.channel:active{
+    transform:scale(.96);
+}
+
+.channel:hover{
+    background:#1d222c;
+}
+
+/* ===== Image ===== */
+
+.logo-box{
+    height:115px;
+
+    background:#fff;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    padding:12px;
+
+    position:relative;
+}
+
+.logo-box img{
+    width:100%;
+    height:100%;
+
+    object-fit:contain;
+
+    display:block;
+}
+
+/* ===== Number ===== */
+
+.number{
+    position:absolute;
+
+    top:8px;
+    right:8px;
+
+    min-width:31px;
+    height:31px;
+
+    padding:0 7px;
+
+    background:#54217d;
+
+    border-radius:6px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:17px;
+    font-weight:bold;
+}
+
+/* ===== Channel Name ===== */
+
+.name{
+    min-height:52px;
+
+    display:flex;
+    align-items:center;
+
+    padding:8px 10px;
+
+    font-size:14px;
+
+    color:#d5d8de;
+
+    line-height:1.2;
+}
+
+/* ===== Online indicator ===== */
+
+.online{
+    width:7px;
+    height:7px;
+
+    background:#20d46b;
+
+    border-radius:50%;
+
+    display:inline-block;
+
+    margin-right:6px;
+
+    box-shadow:
+        0 0 7px #20d46b;
+}
+
+/* ===== Tablet ===== */
+
+@media (min-width:600px){
+
+    .channels{
+        grid-template-columns:
+            repeat(4, 1fr);
+    }
+
+    .logo-box{
+        height:140px;
+    }
+
+}
+
+/* ===== Desktop ===== */
+
+@media (min-width:1000px){
+
+    .container{
+        max-width:1100px;
+        margin:auto;
+    }
+
+    .channels{
+        grid-template-columns:
+            repeat(5, 1fr);
+    }
+
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="player" id="player">
+<!-- HEADER -->
 
-    <video
-        id="video"
-        controls
-        playsinline>
-    </video>
+<header class="header">
 
-    <button
-        class="fullscreen-btn"
-        id="fullscreenBtn"
-        title=" ">
-        ⛶
-    </button>
+    <div class="back"></div>
 
-</div>
+    <div class="title">
+        ismalive
+    </div>
 
-<div id="status">
-    جاري تحميل البث...
-</div>
+  
 
+</header>
 
-<script>
 
-const video = document.getElementById("video");
-const player = document.getElementById("player");
-const fullscreenBtn = document.getElementById("fullscreenBtn");
-const status = document.getElementById("status");
+<main class="container">
 
+    <div class="section-title">
+         
+    </div>
 
-/* رابط البث */
-const stream =
-"http://h58.foodello.lol/live/69854211/index.m3u8?t=DfWFWqw_6QoegwHRfoYDFg&e=1788206406";
 
+    <div class="channels">
 
-/* =========================
-   تشغيل HLS
-========================= */
 
-if (Hls.isSupported()) {
+        <!-- 1 -->
 
-    const hls = new Hls({
-        enableWorker: true,
-        lowLatencyMode: true
-    });
+        <a class="channel" href="#">
 
-    hls.loadSource(stream);
+            <div class="logo-box">
 
-    hls.attachMedia(video);
+                <img
+                src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Logo_beIN_SPORTS_1.png"
+                alt="beIN SPORTS 1">
 
+                <span class="number">1</span>
 
-    hls.on(Hls.Events.MANIFEST_PARSED, function () {
+            </div>
 
-        status.textContent = "تم تحميل البث";
+            <div class="name">
+                <span class="online"></span>
+                beIN SPORTS 1
+            </div>
 
-        video.play().catch(() => {
-            status.textContent = " ";
-        });
+        </a>
 
-    });
 
+        <!-- 2 -->
 
-    hls.on(Hls.Events.ERROR, function(event, data) {
+        <a class="channel" href="livekhedam3.html">
 
-        console.log("HLS ERROR:", data);
+            <div class="logo-box">
 
-        status.textContent =
-            "خطأ: " + data.type + " / " + data.details;
+                <img
+                src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Logo_beIN_SPORTS_2.png"
+                alt="beIN SPORTS 2">
 
+                <span class="number">2</span>
 
-        if (data.fatal) {
+            </div>
 
-            if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+            <div class="name">
+                <span class="online"></span>
+                beIN SPORTS 2
+            </div>
 
-                console.log("إعادة الاتصال...");
+        </a>
 
-                hls.startLoad();
 
-            }
+        <!-- 3 -->
 
-            else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+        <a class="channel" href="http://h59.dishino.lol/live/161988840/index.m3u8?t=vrkGYYSHMIdRNCZbQHAQfQ&e=1788287580">
 
-                hls.recoverMediaError();
+            <div class="logo-box">
 
-            }
+                <img
+                src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Logo_beIN_SPORTS_3.png"
+                alt="beIN SPORTS 3">
 
-            else {
+                <span class="number">3</span>
 
-                hls.destroy();
+            </div>
 
-            }
+            <div class="name">
+                <span class="online"></span>
+                beIN SPORTS 3
+            </div>
 
-        }
+        </a>
 
-    });
 
-}
+        <!-- 4 -->
 
+        <a class="channel" href="#">
 
-/* =========================
-   دعم HLS الأصلي
-   مثل Safari
-========================= */
+            <div class="logo-box">
 
-else if (
-    video.canPlayType(
-        "application/vnd.apple.mpegurl"
-    )
-) {
+                <img
+                src="be4.jpeg"
+                alt="beIN SPORTS 4">
 
-    video.src = stream;
+                <span class="number">4</span>
 
-    video.addEventListener(
-        "loadedmetadata",
-        function() {
+            </div>
 
-            status.textContent = "تم تحميل البث";
+            <div class="name">
+                <span class="online"></span>
+                beIN SPORTS 4
+            </div>
 
-            video.play().catch(() => {});
+        </a>
 
-        }
-    );
 
-}
+        <!-- 5 -->
 
+        <a class="channel" href="#">
 
-/* =========================
-   Fullscreen
-========================= */
+            <div class="logo-box">
 
-fullscreenBtn.addEventListener(
-    "click",
-    function() {
+                <img
+                src="images.jpeg"
+                alt="beIN SPORTS 5">
 
-        if (!document.fullscreenElement) {
+                <span class="number">5</span>
 
-            if (player.requestFullscreen) {
+            </div>
 
-                player.requestFullscreen();
+            <div class="name">
+                <span class="online"></span>
+                beIN SPORTS 5
+            </div>
 
-            }
+        </a>
 
-            else if (player.webkitRequestFullscreen) {
 
-                player.webkitRequestFullscreen();
+        <!-- 6 -->
 
-            }
+        <a class="channel" href="#">
 
-        }
+            <div class="logo-box">
 
-        else {
+                <img
+                src="https://commons.wikimedia.org/wiki/Special:Redirect/file/6-HD.png"
+                alt="beIN SPORTS 6">
 
-            if (document.exitFullscreen) {
+                <span class="number">6</span>
 
-                document.exitFullscreen();
+            </div>
 
-            }
+            <div class="name">
+                <span class="online"></span>
+                beIN SPORTS 6
+            </div>
 
-            else if (document.webkitExitFullscreen) {
+        </a>
 
-                document.webkitExitFullscreen();
 
-            }
+        <!-- 7 -->
 
-        }
+        <a class="channel" href="#">
 
-    }
-);
+            <div class="logo-box">
 
+                <img
+                src="https://commons.wikimedia.org/wiki/Special:Redirect/file/7-HD.png"
+                alt="beIN SPORTS 7">
 
-/* =========================
-   تغيير شكل الزر
-========================= */
+                <span class="number">7</span>
 
-document.addEventListener(
-    "fullscreenchange",
-    function() {
+            </div>
 
-        if (document.fullscreenElement) {
+            <div class="name">
+                <span class="online"></span>
+                beIN SPORTS 7
+            </div>
 
-            fullscreenBtn.textContent = "×";
-            fullscreenBtn.title = " ";
+        </a>
 
-        }
 
-        else {
+        <!-- 8 -->
 
-            fullscreenBtn.textContent = "⛶";
-            fullscreenBtn.title = " ";
+        <a class="channel" href="#">
 
-        }
+            <div class="logo-box">
 
-    }
-);
+                <img
+                src="https://commons.wikimedia.org/wiki/Special:Redirect/file/8-HD.png"
+                alt="beIN SPORTS 8">
 
-</script>
+                <span class="number">8</span>
+
+            </div>
+
+            <div class="name">
+                <span class="online"></span>
+                beIN SPORTS 8
+            </div>
+
+        </a>
+
+
+        <!-- 9 -->
+
+        <a class="channel" href="#">
+
+            <div class="logo-box">
+
+                <img
+                src="https://commons.wikimedia.org/wiki/Special:Redirect/file/9-HD.png"
+                alt="beIN SPORTS 9">
+
+                <span class="number">9</span>
+
+            </div>
+
+            <div class="name">
+                <span class="online"></span>
+                beIN SPORTS 9
+            </div>
+
+        </a>
+
+
+        <!-- XTRA 1 -->
+
+        <a class="channel" href="#">
+
+            <div class="logo-box">
+
+                <img
+                src="https://commons.wikimedia.org/wiki/Special:Redirect/file/BeIN_Sports_XTRA_1_logo.svg"
+                alt="beIN XTRA 1">
+
+                
+
+            </div>
+
+            <div class="name">
+                <span class="online"></span>
+                beIN XTRA 1
+            </div>
+
+        </a>
+
+
+        <!-- XTRA 2 -->
+
+        <a class="channel" href="#">
+
+            <div class="logo-box">
+
+                <img
+                src="https://commons.wikimedia.org/wiki/Special:Redirect/file/BeIN_Sports_XTRA_2_logo.svg"
+                alt="beIN XTRA 2">
+
+                
+
+            </div>
+
+            <div class="name">
+                <span class="online"></span>
+                beIN XTRA 2
+            </div>
+
+        </a>
+
+
+        <!-- XTRA 3 -->
+
+        <a class="channel" href="#">
+
+            <div class="logo-box">
+
+                <img
+                src="https://commons.wikimedia.org/wiki/Special:Redirect/file/BeIN_Sports_XTRA_3_logo.svg"
+                alt="beIN XTRA 3">
+
+                
+
+            </div>
+
+            <div class="name">
+                <span class="online"></span>
+                beIN XTRA 3
+            </div>
+
+        </a>
+
+
+    </div>
+
+</main>
 
 </body>
 </html>
