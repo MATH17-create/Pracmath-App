@@ -514,21 +514,26 @@ body{
 
 </main>
 <script>
-        // عدد مرات إعادة التحميل
-        let refreshCount = Number(sessionStorage.getItem("refreshCount") || 0);
+(function () {
 
-        if (refreshCount < 3) {
-            refreshCount++;
-            sessionStorage.setItem("refreshCount", refreshCount);
+    let count = parseInt(sessionStorage.getItem("refreshCount") || "0");
 
-            // إعادة تحميل الصفحة بعد 500 ملي ثانية
-            setTimeout(function () {
-                location.reload();
-            }, 500);
-        } else {
-            // بعد الوصول إلى 3 مرات، نحذف العداد
-            sessionStorage.removeItem("refreshCount");
-        }
+    if (count < 3) {
+
+        sessionStorage.setItem("refreshCount", count + 1);
+
+        setTimeout(function () {
+            location.reload();
+        }, 500);
+
+    } else {
+
+        // بعد 3 Refresh تبقى الصفحة كما هي
+        sessionStorage.removeItem("refreshCount");
+
+    }
+
+})();
 </script>
 
 </body>
