@@ -1,17 +1,8 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-
+<!DOCTYPE html><html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
-<title>browser</title>
-
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
-<style>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sports TV Player</title><script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script><style>
 *{
     box-sizing:border-box;
     margin:0;
@@ -19,657 +10,531 @@
 }
 
 body{
-    background:#080b10;
-    color:white;
     font-family:Arial,Tahoma,sans-serif;
+    background:#080b10;
+    color:#fff;
+    min-height:100vh;
 }
 
 header{
-    height:60px;
+    padding:18px;
+    text-align:center;
     background:#10151d;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-bottom:1px solid #202733;
+    border-bottom:1px solid #202833;
 }
 
 header h1{
-    font-size:21px;
+    font-size:24px;
 }
 
-.container{
-    display:flex;
-    height:calc(100vh - 60px);
+header p{
+    color:#8d98a8;
+    margin-top:6px;
+    font-size:13px;
 }
 
-.channels{
-    width:300px;
-    background:#0d1219;
-    overflow-y:auto;
-    padding:10px;
-}
-
-.search{
-    margin-bottom:10px;
-}
-
-.search input{
+.player-box{
     width:100%;
-    padding:12px;
-    border-radius:8px;
-    border:1px solid #27313d;
-    background:#151b23;
-    color:white;
-    outline:none;
-}
-
-.channel{
-    width:100%;
-    background:#151c25;
-    border:1px solid #222b36;
-    color:white;
-    padding:14px 10px;
-    margin-bottom:7px;
-    border-radius:8px;
-    cursor:pointer;
-    text-align:right;
-}
-
-.channel:hover{
-    background:#202a36;
-}
-
-.channel.active{
-    background:#26384b;
-    border-color:#4d8dca;
-}
-
-.player{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    padding:15px;
-    background:#05070a;
+    max-width:1100px;
+    margin:auto;
+    background:#000;
 }
 
 video{
     width:100%;
-    max-width:1100px;
-    max-height:75vh;
+    display:block;
+    aspect-ratio:16/9;
     background:#000;
-    border-radius:10px;
-}
-
-.now{
-    width:100%;
-    max-width:1100px;
-    margin-top:12px;
-    padding:12px;
-    background:#10151c;
-    border-radius:8px;
-    text-align:center;
 }
 
 .status{
-    margin-top:8px;
-    color:#aaa;
-    font-size:13px;
+    padding:10px 15px;
+    text-align:center;
+    background:#10151d;
+    color:#9da8b7;
+    font-size:14px;
 }
 
-@media(max-width:750px){
+.search{
+    max-width:900px;
+    margin:18px auto 10px;
+    padding:0 12px;
+}
 
-    .container{
-        flex-direction:column;
-        height:auto;
-    }
+.search input{
+    width:100%;
+    padding:14px 18px;
+    border-radius:12px;
+    border:1px solid #29313c;
+    outline:none;
+    background:#111720;
+    color:white;
+    font-size:15px;
+}
 
-    .player{
-        order:1;
-        min-height:300px;
+.channels{
+    max-width:1100px;
+    margin:15px auto;
+    padding:0 12px 30px;
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    gap:10px;
+}
+
+.channel{
+    background:#111720;
+    border:1px solid #202a35;
+    border-radius:12px;
+    padding:14px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.channel:hover{
+    background:#18212c;
+    transform:translateY(-2px);
+}
+
+.channel.active{
+    border-color:#36a3ff;
+    background:#172534;
+}
+
+.channel-name{
+    font-size:14px;
+    font-weight:bold;
+    line-height:1.5;
+}
+
+.channel-group{
+    margin-top:6px;
+    color:#7f8b9a;
+    font-size:11px;
+}
+
+.error{
+    color:#ff6672;
+}
+
+@media(max-width:600px){
+    header h1{
+        font-size:20px;
     }
 
     .channels{
-        order:2;
-        width:100%;
-        height:45vh;
-    }
-
-    video{
-        max-height:50vh;
+        grid-template-columns:1fr;
     }
 }
+</style></head><body><header>
+    <h1>⚽ Sports TV</h1>
+    <p>SPORT KLUB • ARENA SPORT • EUROSPORT • NOVA SPORT</p>
+</header><div class="player-box">
+    <video id="video" controls playsinline></video>
+    <div id="status" class="status">
+        اختر قناة من القائمة
+    </div>
+</div><div class="search">
+    <input
+        id="search"
+        type="text"
+        placeholder="🔎 البحث عن قناة..."
+        autocomplete="off"
+    >
+</div><div id="channels" class="channels"></div><script>
 
-</style>
-</head>
+const M3U = `#EXTM3U
 
-<body>
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551930&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551929&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 1 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551928&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 1 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551927&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 2 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551926&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 2 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551925&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 3 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551924&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 3 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551923&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 4 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551922&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 4 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551921&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 5 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551920&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 5 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551919&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 6 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551918&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 6 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551917&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 7 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551916&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 7 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551915&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 8 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551914&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 8 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551913&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 9 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551912&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SPORT KLUB 10 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=552159&extension=ts
 
-<header>
-    <h1>Ismail iptv</h1>
-</header>
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 1 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551910&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 1 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551909&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 2 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551908&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 2 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551907&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 3 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551906&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 3 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551905&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 4 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551904&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 4 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551903&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 5 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551902&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 5 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551901&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 6 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551900&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 6 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551899&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 7 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551898&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 7 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551897&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 8 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551896&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 8 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551895&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 9 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551894&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 10 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551892&extension=ts
 
-<div class="container">
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 1X2 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=552032&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 1X2 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=552031&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 1 PREMIUM FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551890&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 1 PREMIUM HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551889&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 2 PREMIUM FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551888&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 2 PREMIUM HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551887&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 3 PREMIUM FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551886&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ARENA SPORT 3 PREMIUM HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551885&extension=ts
 
-    <aside class="channels">
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ EUROSPORT 1 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551872&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ EUROSPORT 1 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551871&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ EUROSPORT 2 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551870&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ EUROSPORT 2 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551869&extension=ts
 
-        <div class="search">
-            <input
-                id="search"
-                type="text"
-                placeholder="🔎 بحث عن قناة..."
-            >
-        </div>
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ NOVA SPORT FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551884&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ NOVA SPORT HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551883&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ZVEZDA TV FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551882&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ ZVEZDA TV HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551881&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ TV PARTIZAN FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551880&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ TV PARTIZAN HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551879&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SOS KANAL HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551878&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",SRB⚜️ SOS KANAL
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551877&extension=ts
 
-        <div id="channelList"></div>
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",HR⚜️ MAX SPORT 1 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551876&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",HR⚜️ MAX SPORT 1 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551875&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",HR⚜️ MAX SPORT 2 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551874&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",HR⚜️ MAX SPORT 2 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551873&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",HR⚜️ ARENA SPORT 1 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551868&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",HR⚜️ ARENA SPORT 1 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551867&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",HR⚜️ ARENA SPORT 2 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551866&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",HR⚜️ ARENA SPORT 2 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551865&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",HR⚜️ ARENA SPORT 3 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551864&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",HR⚜️ ARENA SPORT 3 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551863&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",HR⚜️ ARENA SPORT 4 FHD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551862&extension=ts
+#EXTINF:-1 group-title="VIP ✨ SPORTS EX-YU",HR⚜️ ARENA SPORT 4 HD
+http://zerotv.eu:8080/play/live.php?mac=00:1A:79:14:E9:ED&stream=551861&extension=ts`;
 
-    </aside>
+const video = document.getElementById("video");
+const channelsBox = document.getElementById("channels");
+const statusBox = document.getElementById("status");
+const searchBox = document.getElementById("search");
 
+let hls = null;
+let channels = [];
 
-    <main class="player">
+function parseM3U(text){
 
-        <video
-            id="video"
-            controls
-            playsinline
-            preload="none">
-        </video>
+    const lines = text
+        .split(/\r?\n/)
+        .map(x => x.trim())
+        .filter(Boolean);
 
-        <div class="now">
+    const result = [];
 
-            <div id="channelName">
-                اختر قناة
-            </div>
+    for(let i = 0; i < lines.length; i++){
 
-            <div class="status" id="status">
-                لم يتم تشغيل أي قناة
-            </div>
+        if(lines[i].startsWith("#EXTINF")){
 
-        </div>
+            const info = lines[i];
+            const url = lines[i + 1];
 
-    </main>
+            if(!url || url.startsWith("#")) continue;
 
-</div>
+            const namePart = info.substring(info.lastIndexOf(",") + 1);
 
+            const groupMatch =
+                info.match(/group-title="([^"]*)"/i);
 
-<script>
+            result.push({
+                name:namePart,
+                group:groupMatch ? groupMatch[1] : "",
+                url:url
+            });
+        }
+    }
 
-/* =========================================
-   ضع روابطك هنا
-========================================= */
-
-const channels = [
-
-{
-name:"BEIN SPORTS HD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=594520&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS AR 4K",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=1096850&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 1 HD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=594516&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 2 HD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=594515&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 3 HD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=594514&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 4 HD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=594513&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 5 HD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=594512&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 6 HD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=594511&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 7 HD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=594510&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 8 HD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=594518&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 9 HD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=594517&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 1 XTRA ",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=863375&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 2 XTRA ",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=863374&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 3 XTRA ",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=863373&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 1 EN ",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=594509&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 2 EN ",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=594508&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550416&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS NEWS ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550402&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS GLOBAL ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550401&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 1 ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550412&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 2 ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550411&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 3 ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550410&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 4 ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550409&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 5 ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550408&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 6 ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550407&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 7 ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550406&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 8 ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550415&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 9 ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550414&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS XTRA 1 ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=956025&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS XTRA 2 ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=956026&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS XTRA 3 ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=956024&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 1 EN ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550405&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 2 EN ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550404&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 1 FR ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550403&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 2 FR ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=550413&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 3 FR ULTRA FHD",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=956022&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 1 4K",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=653626&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 2 4K",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=653625&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 3 4K",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=653624&extension=m3u8"
-},
-
-{
-name:"BEIN SPORTS 4K",
-url:"http://activeiptv.sbs:80/play/live.php?mac=00:1B:79:49:39:E9&stream=653635&extension=m3u8"
+    return result;
 }
 
-];
+channels = parseM3U(M3U);
 
-
-/* =========================================
-   تحويل extension=m3u8
-   إلى extension=.m3u8
-========================================= */
-
-function fixM3U8(url){
+function convertToM3U8(url){
 
     return url.replace(
-        /([?&]extension)=m3u8\b/i,
-        "$1=.m3u8"
+        /([?&]extension=)ts\b/i,
+        "$1m3u8"
     );
-
 }
 
+function renderChannels(list){
 
-/* =========================================
-   عناصر الصفحة
-========================================= */
+    channelsBox.innerHTML = "";
 
-const video =
-    document.getElementById("video");
+    list.forEach((channel,index)=>{
 
-const list =
-    document.getElementById("channelList");
+        const div = document.createElement("div");
 
-const channelName =
-    document.getElementById("channelName");
+        div.className = "channel";
 
-const status =
-    document.getElementById("status");
+        div.innerHTML = `
+            <div class="channel-name">
+                ${escapeHTML(channel.name)}
+            </div>
 
-const search =
-    document.getElementById("search");
+            <div class="channel-group">
+                ${escapeHTML(channel.group)}
+            </div>
+        `;
 
+        div.addEventListener("click",()=>{
 
-/* =========================================
-   إنشاء قائمة القنوات
-========================================= */
+            document
+                .querySelectorAll(".channel")
+                .forEach(x=>x.classList.remove("active"));
 
-function renderChannels(filter=""){
+            div.classList.add("active");
 
-    list.innerHTML="";
-
-    channels
-    .filter(c =>
-        c.name
-        .toLowerCase()
-        .includes(filter.toLowerCase())
-    )
-    .forEach((channel,index)=>{
-
-        const button =
-            document.createElement("button");
-
-        button.className="channel";
-
-        button.textContent=channel.name;
-
-        button.onclick=()=>{
-
-            playChannel(channel,index);
-
-        };
-
-        list.appendChild(button);
-
-    });
-
-}
-
-
-/* =========================================
-   تشغيل القناة
-========================================= */
-
-function playChannel(channel,index){
-
-    const buttons =
-        document.querySelectorAll(".channel");
-
-    buttons.forEach(
-        b=>b.classList.remove("active")
-    );
-
-    if(buttons[index]){
-        buttons[index].classList.add("active");
-    }
-
-    channelName.textContent =
-        channel.name;
-
-    status.textContent =
-        "جاري الاتصال بالبث...";
-
-    /*
-       هنا يتم تعديل الرابط تلقائياً
-       extension=m3u8
-                ↓
-       extension=.m3u8
-    */
-
-    const streamURL =
-        fixM3U8(channel.url);
-
-    console.log(
-        "الرابط المستخدم:",
-        streamURL
-    );
-
-    video.pause();
-
-    video.removeAttribute("src");
-
-    video.load();
-
-
-    /* =====================================
-       استخدام HLS
-    ===================================== */
-
-    if(
-        typeof Hls !== "undefined" &&
-        Hls.isSupported()
-    ){
-
-        if(window.hlsPlayer){
-
-            window.hlsPlayer.destroy();
-
-        }
-
-        window.hlsPlayer =
-            new Hls({
-
-                enableWorker:true,
-
-                lowLatencyMode:true,
-
-                backBufferLength:30
-
-            });
-
-
-        window.hlsPlayer.loadSource(
-            streamURL
-        );
-
-
-        window.hlsPlayer.attachMedia(
-            video
-        );
-
-
-        window.hlsPlayer.on(
-            Hls.Events.MANIFEST_PARSED,
-            function(){
-
-                video.play()
-                .then(()=>{
-
-                    status.textContent =
-                        "● البث يعمل";
-
-                })
-                .catch(()=>{
-
-                    status.textContent =
-                        "اضغط ▶ لتشغيل البث";
-
-                });
-
-            }
-        );
-
-
-        window.hlsPlayer.on(
-            Hls.Events.ERROR,
-            function(event,data){
-
-                console.log(
-                    "HLS ERROR:",
-                    data
-                );
-
-                if(data.fatal){
-
-                    status.textContent =
-                        "تعذر تشغيل البث";
-
-                }
-
-            }
-        );
-
-    }
-
-    /*
-       Safari / iPhone وبعض المتصفحات
-    */
-
-    else if(
-        video.canPlayType(
-            "application/vnd.apple.mpegurl"
-        )
-    ){
-
-        video.src=streamURL;
-
-        video.play()
-        .then(()=>{
-
-            status.textContent =
-                "● البث يعمل";
-
-        })
-        .catch(()=>{
-
-            status.textContent =
-                "اضغط ▶ لتشغيل البث";
-
+            playChannel(channel);
         });
 
-    }
-
-    else{
-
-        status.textContent =
-            "المتصفح لا يدعم HLS";
-
-    }
-
+        channelsBox.appendChild(div);
+    });
 }
 
+function escapeHTML(text){
 
-/* =========================================
-   البحث
-========================================= */
+    return String(text)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
 
-search.addEventListener(
-    "input",
-    ()=>{
-        renderChannels(search.value);
+function playChannel(channel){
+
+    let url = convertToM3U8(channel.url);
+
+    statusBox.textContent =
+        "جاري تشغيل: " + channel.name;
+
+    statusBox.classList.remove("error");
+
+    if(hls){
+
+        hls.destroy();
+        hls = null;
     }
-);
 
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
 
-/* =========================================
-   أخطاء الفيديو
-========================================= */
+    if(Hls.isSupported()){
 
-video.addEventListener(
-    "error",
-    ()=>{
-        status.textContent =
-            "تعذر تشغيل البث";
+        hls = new Hls({
+            enableWorker:true,
+            lowLatencyMode:true,
+            backBufferLength:30,
+            maxBufferLength:30
+        });
+
+        hls.loadSource(url);
+        hls.attachMedia(video);
+
+        hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+
+            video.play().catch(()=>{});
+
+            statusBox.textContent =
+                "▶ " + channel.name;
+        });
+
+        hls.on(Hls.Events.ERROR,(event,data)=>{
+
+            if(data.fatal){
+
+                statusBox.textContent =
+                    "تعذر تشغيل القناة: " + channel.name;
+
+                statusBox.classList.add("error");
+
+                switch(data.type){
+
+                    case Hls.ErrorTypes.NETWORK_ERROR:
+
+                        hls.startLoad();
+                        break;
+
+                    case Hls.ErrorTypes.MEDIA_ERROR:
+
+                        hls.recoverMediaError();
+                        break;
+
+                    default:
+
+                        hls.destroy();
+                        hls = null;
+                        break;
+                }
+            }
+        });
+
+    }else if(
+        video.canPlayType("application/vnd.apple.mpegurl")
+    ){
+
+        video.src = url;
+
+        video.addEventListener(
+            "loadedmetadata",
+            ()=>video.play().catch(()=>{}),
+            {once:true}
+        );
+
+    }else{
+
+        statusBox.textContent =
+            "هذا الجهاز لا يدعم تشغيل HLS";
+
+        statusBox.classList.add("error");
     }
-);
+}
 
+searchBox.addEventListener("input",()=>{
 
-/* =========================================
-   بدء الصفحة
-========================================= */
+    const q =
+        searchBox.value
+            .toLowerCase()
+            .trim();
 
-renderChannels();
+    const filtered = channels.filter(channel=>
 
-</script>
+        channel.name.toLowerCase().includes(q) ||
+        channel.group.toLowerCase().includes(q)
+    );
 
-</body>
+    renderChannels(filtered);
+});
+
+video.addEventListener("waiting",()=>{
+
+    statusBox.textContent = "⏳ جاري تحميل البث...";
+});
+
+video.addEventListener("playing",()=>{
+
+    statusBox.classList.remove("error");
+});
+
+video.addEventListener("error",()=>{
+
+    statusBox.textContent =
+        "⚠️ حدث خطأ في تشغيل البث";
+
+    statusBox.classList.add("error");
+});
+
+renderChannels(channels);
+
+// تشغيل Arena Sport 6 FHD تلقائياً عند فتح الصفحة
+window.addEventListener("load", () => {
+
+    const arena6 = channels.find(channel =>
+        channel.name.includes("ARENA SPORT 3 FHD")
+    );
+
+    if (arena6) {
+        playChannel(arena6);
+
+        // تحديد القناة النشطة بصرياً
+        const channelElements =
+            document.querySelectorAll(".channel");
+
+        const index = channels.indexOf(arena6);
+
+        if (channelElements[index]) {
+            channelElements[index].classList.add("active");
+        }
+    }
+
+});
+
+</script></body>
 </html>
