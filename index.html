@@ -1,789 +1,367 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Images to PDF Converter</title>  <!-- jsPDF عبر HTTPS -->  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>  <style>
-    :root {
-      --primary-color: #2563eb;
-      --primary-hover: #1d4ed8;
-      --success-color: #10b981;
-      --success-hover: #059669;
-      --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --text-color: #0f172a;
-      --border-color: #e2e8f0;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                   Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    body {
-      background: var(--bg-color);
-      color: var(--text-color);
-      display: flex;
-      justify-content: center;
-      padding: 40px 20px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 800px;
-      background: var(--card-bg);
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,.05);
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    header h1 {
-      font-size: 1.8rem;
-      margin-bottom: 8px;
-    }
-
-    header p {
-      color: #64748b;
-      font-size: .95rem;
-    }
-
-    .drop-zone {
-      border: 2px dashed var(--border-color);
-      border-radius: 12px;
-      padding: 35px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: .3s;
-      background: #fafafa;
-    }
-
-    .drop-zone:hover,
-    .drop-zone.dragover {
-      border-color: var(--primary-color);
-      background: #eff6ff;
-    }
-
-    .drop-zone-content svg {
-      stroke: var(--primary-color);
-      margin-bottom: 10px;
-    }
-
-    .drop-zone-content p span {
-      color: var(--primary-color);
-      font-weight: 600;
-    }
-
-    .file-list {
-      list-style: none;
-      margin-top: 20px;
-      max-height: 220px;
-      overflow-y: auto;
-    }
-
-    .file-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      background: #f1f5f9;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      font-size: .9rem;
-    }
-
-    .actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 20px;
-    }
-
-    .btn {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background .2s;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .primary-btn {
-      background: var(--primary-color);
-      color: white;
-    }
-
-    .primary-btn:hover:not(:disabled) {
-      background: var(--primary-hover);
-    }
-
-    .success-btn {
-      background: var(--success-color);
-      color: white;
-    }
-
-    .success-btn:hover:not(:disabled) {
-      background: var(--success-hover);
-    }
-
-    .secondary-btn {
-      background: #e2e8f0;
-      color: #475569;
-    }
-
-    .secondary-btn:hover:not(:disabled) {
-      background: #cbd5e1;
-    }
-
-    .btn:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
-
-    .preview-container {
-      margin-top: 30px;
-      border-top: 1px solid var(--border-color);
-      padding-top: 20px;
-    }
-
-    .preview-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .preview-header h2 {
-      font-size: 1.2rem;
-    }
-
-    .embed-wrapper {
-      width: 100%;
-      height: 550px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      overflow: hidden;
-      background: #eee;
-    }
-
-    embed {
-      width: 100%;
-      height: 100%;
-    }
-
-    .status {
-      text-align: center;
-      margin-top: 12px;
-      color: #64748b;
-      font-size: .9rem;
-    }
-  </style></head><body><div class="container">  <header>
-    <h1>Images to PDF Converter</h1>
-    <p>Convert your images into a single PDF document instantly.</p>
-  </header>  <div class="drop-zone" id="dropZone"><input
-  type="file"
-  id="fileInput"
-  multiple
-  accept="image/*"
-  hidden
->
-
-<div class="drop-zone-content">
-
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="48"
-    height="48"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round">
-
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-    <polyline points="17 8 12 3 7 8"/>
-    <line x1="12" y1="3" x2="12" y2="15"/>
-
-  </svg>
-
-  <p>
-    Drag & Drop images here or
-    <span>Browse</span>
-  </p>
-
-</div>
-
-  </div>  <ul class="file-list" id="fileList"></ul>  <div class="actions"><button
-  id="convertBtn"
-  class="btn primary-btn"
-  disabled>
-  Convert to PDF
-</button>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GraFun 3D - Privacy Policy</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            color: #202124;
+            line-height: 1.7;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #6c5ce7, #4834d4);
+            color: white;
+            text-align: center;
+            padding: 45px 20px;
+        }
+
+        .header h1 {
+            font-size: 34px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 18px;
+        }
+
+        .policy {
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .intro {
+            background: #f1efff;
+            border-left: 5px solid #6c5ce7;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #4834d4;
+            font-size: 23px;
+            margin-top: 30px;
+            margin-bottom: 12px;
+        }
+
+        h3 {
+            color: #333;
+            margin-top: 18px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 14px;
+        }
+
+        ul {
+            margin: 10px 0 15px 25px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .date {
+            color: #666;
+            font-size: 14px;
+            margin-top: 25px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px 15px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .contact {
+            background: #f8f8ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
 
-<button
-  id="clearBtn"
-  class="btn secondary-btn"
-  disabled>
-  Clear All
-</button>
+        a {
+            color: #4834d4;
+            text-decoration: none;
+        }
 
-  </div>  <div
-    id="status"
-    class="status">
-  </div>  <div
-    class="preview-container"
-    id="previewContainer"
-    style="display:none;"><div class="preview-header">
+        a:hover {
+            text-decoration: underline;
+        }
 
-  <h2>PDF Preview</h2>
+        @media (max-width: 600px) {
+            .header {
+                padding: 35px 15px;
+            }
 
-  <button
-    id="downloadBtn"
-    class="btn success-btn"
-    style="flex:initial;padding:8px 16px;">
+            .header h1 {
+                font-size: 28px;
+            }
 
-    Download PDF
+            .policy {
+                padding: 22px;
+            }
 
-  </button>
+            h2 {
+                font-size: 21px;
+            }
+        }
+    </style>
+</head>
 
-</div>
+<body>
 
-<div
-  class="embed-wrapper"
-  id="previewWrapper">
-</div>
+    <header class="header">
+        <h1>GraFun 3D</h1>
+        <p>Privacy Policy</p>
+    </header>
 
-  </div></div><script>
+    <main class="container">
 
-"use strict";
+        <div class="policy">
 
-const { jsPDF } = window.jspdf;
+            <div class="intro">
+                <strong>Privacy matters to us.</strong>
+                This Privacy Policy explains how GraFun 3D handles information
+                when you use our application.
+            </div>
 
-const dropZone =
-  document.getElementById("dropZone");
+            <h2>1. Introduction</h2>
 
-const fileInput =
-  document.getElementById("fileInput");
+            <p>
+                Welcome to GraFun 3D. This Privacy Policy describes how
+                information may be collected, used, and protected when you
+                use the GraFun 3D application.
+            </p>
 
-const fileList =
-  document.getElementById("fileList");
+            <p>
+                By using GraFun 3D, you agree to the practices described
+                in this Privacy Policy.
+            </p>
 
-const convertBtn =
-  document.getElementById("convertBtn");
 
-const clearBtn =
-  document.getElementById("clearBtn");
+            <h2>2. Information We Collect</h2>
 
-const downloadBtn =
-  document.getElementById("downloadBtn");
+            <p>
+                GraFun 3D is designed to provide its features while
+                minimizing the collection of personal information.
+            </p>
 
-const previewContainer =
-  document.getElementById("previewContainer");
+            <p>
+                Depending on the features you use, the application may
+                process information such as:
+            </p>
 
-const previewWrapper =
-  document.getElementById("previewWrapper");
+            <ul>
+                <li>Information you voluntarily enter into the application.</li>
+                <li>Application settings and preferences.</li>
+                <li>Technical information required for the application to function properly.</li>
+            </ul>
 
-const status =
-  document.getElementById("status");
+            <p>
+                We do not intentionally collect sensitive personal information
+                unless it is necessary for a specific feature and clearly
+                communicated to you.
+            </p>
 
-let selectedFiles = [];
 
-let pdfDoc = null;
+            <h2>3. How We Use Information</h2>
 
-let pdfBlob = null;
+            <p>
+                Any information processed by GraFun 3D may be used to:
+            </p>
 
+            <ul>
+                <li>Provide and operate application features.</li>
+                <li>Improve application performance and stability.</li>
+                <li>Remember user preferences and settings.</li>
+                <li>Identify and fix technical problems.</li>
+            </ul>
 
-/* =========================
-   اختيار الصور
-========================= */
 
-dropZone.addEventListener("click", () => {
+            <h2>4. Data Storage</h2>
 
-  fileInput.click();
+            <p>
+                Some application data may be stored locally on your device
+                to allow GraFun 3D to function correctly and remember your
+                preferences.
+            </p>
 
-});
+            <p>
+                Local data generally remains on your device unless you
+                remove the application or clear its data.
+            </p>
 
 
-fileInput.addEventListener("change", event => {
+            <h2>5. Third-Party Services</h2>
 
-  handleFiles(event.target.files);
+            <p>
+                GraFun 3D may use third-party services that help provide,
+                maintain, analyze, or improve the application.
+            </p>
 
-});
+            <p>
+                These services may process certain technical information
+                according to their own privacy policies.
+            </p>
 
+            <p>
+                If advertising services are used in the application,
+                advertising providers may collect information such as
+                advertising identifiers, device information, and general
+                usage information in accordance with their policies.
+            </p>
 
-/* =========================
-   Drag & Drop
-========================= */
 
-dropZone.addEventListener("dragover", event => {
+            <h2>6. Advertising</h2>
 
-  event.preventDefault();
+            <p>
+                GraFun 3D may display advertisements provided by third-party
+                advertising networks.
+            </p>
 
-  dropZone.classList.add("dragover");
+            <p>
+                Advertising providers may use cookies, advertising IDs,
+                or similar technologies to provide and measure advertisements
+                and to help prevent fraud.
+            </p>
 
-});
+            <p>
+                Users can manage certain advertising and privacy settings
+                through their Android device settings and the services
+                provided by the advertising provider.
+            </p>
 
 
-dropZone.addEventListener("dragleave", () => {
+            <h2>7. Internet Access</h2>
 
-  dropZone.classList.remove("dragover");
+            <p>
+                GraFun 3D may require an Internet connection for certain
+                features, including loading online content, updates,
+                advertisements, or third-party services.
+            </p>
 
-});
+            <p>
+                When the application communicates with external services,
+                information may be transmitted according to the policies
+                of those services.
+            </p>
 
 
-dropZone.addEventListener("drop", event => {
+            <h2>8. Children's Privacy</h2>
 
-  event.preventDefault();
+            <p>
+                GraFun 3D is not intended to knowingly collect personal
+                information from children.
+            </p>
 
-  dropZone.classList.remove("dragover");
+            <p>
+                If you believe that a child has provided personal information
+                through the application, please contact us so that appropriate
+                action can be taken.
+            </p>
 
-  handleFiles(event.dataTransfer.files);
 
-});
+            <h2>9. Data Security</h2>
 
+            <p>
+                We take reasonable measures to protect information processed
+                by the application. However, no method of electronic storage
+                or transmission over the Internet can be guaranteed to be
+                completely secure.
+            </p>
 
-/* =========================
-   معالجة الملفات
-========================= */
 
-function handleFiles(files) {
+            <h2>10. Your Choices</h2>
 
-  const images =
-    Array.from(files).filter(file =>
-      file.type.startsWith("image/")
-    );
+            <p>
+                You may stop using GraFun 3D at any time. You can also
+                uninstall the application from your device to stop further
+                collection or processing associated with the application.
+            </p>
 
-  if (!images.length) {
+            <p>
+                Depending on your device and the services used by the
+                application, you may also have additional privacy controls
+                available through your Android settings.
+            </p>
 
-    status.textContent =
-      "Please select image files.";
 
-    return;
-  }
+            <h2>11. Changes to This Privacy Policy</h2>
 
-  selectedFiles =
-    [...selectedFiles, ...images];
+            <p>
+                We may update this Privacy Policy from time to time.
+                Any changes will be reflected on this page.
+            </p>
 
-  status.textContent = "";
+            <p>
+                We recommend checking this page periodically to stay
+                informed about how information is handled.
+            </p>
 
-  updateUI();
 
-}
+            <h2>12. Contact Us</h2>
 
+            <div class="contact">
+                <p>
+                    If you have any questions, concerns, or requests
+                    regarding this Privacy Policy, please contact us:
+                </p>
 
-/* =========================
-   تحديث القائمة
-========================= */
+                <p>
+                    <strong>App:</strong> GraFun 3D
+                </p>
 
-function updateUI() {
+                <p>
+                    <strong>Email:</strong>
+                    <a href="mailto:YOUR_EMAIL@example.com">
+                        YOUR_EMAIL@example.com
+                    </a>
+                </p>
+            </div>
 
-  fileList.innerHTML = "";
+            <p class="date">
+                Last updated: September 9, 2026
+            </p>
 
-  selectedFiles.forEach((file, index) => {
+        </div>
 
-    const li =
-      document.createElement("li");
+    </main>
 
-    li.className = "file-item";
+    <footer class="footer">
+        © 2026 GraFun 3D. All rights reserved.
+    </footer>
 
-    const name =
-      document.createElement("span");
+</body>
+</html>
 
-    name.textContent =
-      `${index + 1}. ${file.name}`;
+مهم: استبدل فقط:
 
-    const size =
-      document.createElement("small");
+"YOUR_EMAIL@example.com"
 
-    size.textContent =
-      `${(file.size / 1024).toFixed(1)} KB`;
+بالبريد الإلكتروني الذي تستخدمه لدعم تطبيق GraFun 3D.
 
-    li.appendChild(name);
-    li.appendChild(size);
-
-    fileList.appendChild(li);
-
-  });
-
-  const hasFiles =
-    selectedFiles.length > 0;
-
-  convertBtn.disabled =
-    !hasFiles;
-
-  clearBtn.disabled =
-    !hasFiles;
-
-}
-
-
-/* =========================
-   مسح الكل
-========================= */
-
-clearBtn.addEventListener("click", () => {
-
-  selectedFiles = [];
-
-  fileInput.value = "";
-
-  pdfDoc = null;
-
-  pdfBlob = null;
-
-  previewContainer.style.display =
-    "none";
-
-  previewWrapper.innerHTML = "";
-
-  status.textContent = "";
-
-  updateUI();
-
-});
-
-
-/* =========================
-   تحويل الصور إلى PDF
-========================= */
-
-convertBtn.addEventListener("click", async () => {
-
-  if (!selectedFiles.length)
-    return;
-
-  try {
-
-    convertBtn.disabled = true;
-
-    convertBtn.textContent =
-      "Processing...";
-
-    status.textContent =
-      "Creating PDF...";
-
-    pdfDoc = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-      compress: true
-    });
-
-
-    for (
-      let i = 0;
-      i < selectedFiles.length;
-      i++
-    ) {
-
-      const file =
-        selectedFiles[i];
-
-      status.textContent =
-        `Processing image ${i + 1} of ${selectedFiles.length}...`;
-
-      const imageData =
-        await readFileAsDataURL(file);
-
-      const imgProps =
-        await getImageProperties(imageData);
-
-      const pageWidth =
-        pdfDoc.internal.pageSize.getWidth();
-
-      const pageHeight =
-        pdfDoc.internal.pageSize.getHeight();
-
-
-      let imgWidth =
-        pageWidth;
-
-      let imgHeight =
-        (imgProps.height * pageWidth) /
-        imgProps.width;
-
-
-      if (imgHeight > pageHeight) {
-
-        imgHeight =
-          pageHeight;
-
-        imgWidth =
-          (imgProps.width * pageHeight) /
-          imgProps.height;
-
-      }
-
-
-      const xOffset =
-        (pageWidth - imgWidth) / 2;
-
-      const yOffset =
-        (pageHeight - imgHeight) / 2;
-
-
-      if (i > 0) {
-
-        pdfDoc.addPage();
-
-      }
-
-
-      pdfDoc.addImage(
-        imageData,
-        imgProps.format,
-        xOffset,
-        yOffset,
-        imgWidth,
-        imgHeight,
-        undefined,
-        "FAST"
-      );
-
-    }
-
-
-    /* =========================
-       إنشاء Blob
-    ========================= */
-
-    pdfBlob =
-      pdfDoc.output("blob");
-
-
-    /* =========================
-       إنشاء Preview
-    ========================= */
-
-    const previewUrl =
-      URL.createObjectURL(pdfBlob);
-
-
-    previewWrapper.innerHTML = "";
-
-    const embed =
-      document.createElement("embed");
-
-    embed.src =
-      previewUrl;
-
-    embed.type =
-      "application/pdf";
-
-    embed.style.width =
-      "100%";
-
-    embed.style.height =
-      "100%";
-
-    previewWrapper.appendChild(embed);
-
-    previewContainer.style.display =
-      "block";
-
-
-    status.textContent =
-      "PDF created successfully.";
-
-  } catch (error) {
-
-    console.error(error);
-
-    status.textContent =
-      "Error creating PDF: " +
-      error.message;
-
-  } finally {
-
-    convertBtn.textContent =
-      "Convert to PDF";
-
-    convertBtn.disabled =
-      selectedFiles.length === 0;
-
-  }
-
-});
-
-
-/* =========================
-   HTTPS / Blob Download
-========================= */
-
-downloadBtn.addEventListener("click", async () => {
-
-  if (!pdfBlob) {
-
-    status.textContent =
-      "Please create the PDF first.";
-
-    return;
-
-  }
-
-
-  try {
-
-    status.textContent =
-      "Preparing download...";
-
-
-    /*
-      إنشاء Blob URL
-      بدلاً من pdfDoc.save()
-    */
-
-    const blobUrl =
-      URL.createObjectURL(pdfBlob);
-
-
-    const link =
-      document.createElement("a");
-
-    link.href =
-      blobUrl;
-
-    link.download =
-      "converted-images.pdf";
-
-    link.style.display =
-      "none";
-
-    document.body.appendChild(link);
-
-    link.click();
-
-    document.body.removeChild(link);
-
-
-    setTimeout(() => {
-
-      URL.revokeObjectURL(blobUrl);
-
-    }, 5000);
-
-
-    status.textContent =
-      "Download started.";
-
-  } catch (error) {
-
-    console.error(error);
-
-    status.textContent =
-      "Unable to download PDF: " +
-      error.message;
-
-  }
-
-});
-
-
-/* =========================
-   FileReader
-========================= */
-
-function readFileAsDataURL(file) {
-
-  return new Promise((resolve, reject) => {
-
-    const reader =
-      new FileReader();
-
-    reader.onload =
-      () => resolve(reader.result);
-
-    reader.onerror =
-      () => reject(
-        new Error("Unable to read image.")
-      );
-
-    reader.readAsDataURL(file);
-
-  });
-
-}
-
-
-/* =========================
-   Image Properties
-========================= */
-
-function getImageProperties(dataUrl) {
-
-  return new Promise((resolve, reject) => {
-
-    const img =
-      new Image();
-
-    img.onload = () => {
-
-      let format = "JPEG";
-
-      if (
-        dataUrl.startsWith(
-          "data:image/png"
-        )
-      ) {
-
-        format = "PNG";
-
-      } else if (
-        dataUrl.startsWith(
-          "data:image/webp"
-        )
-      ) {
-
-        /*
-          jsPDF قد لا يعمل مع WEBP
-          في بعض WebViews.
-          نحوله إلى JPEG.
-        */
-
-        format = "JPEG";
-
-      }
-
-
-      resolve({
-
-        width: img.width,
-
-        height: img.height,
-
-        format: format
-
-      });
-
-    };
-
-
-    img.onerror = () => {
-
-      reject(
-        new Error("Unable to load image.")
-      );
-
-    };
-
-
-    img.src = dataUrl;
-
-  });
-
-}
-
-</script></body>
-  </html>
+إذا كان تطبيقك يستخدم Google AdMob أو يجمع أي بيانات مثل Advertising ID / Analytics / Crash reports، فمن الأفضل تعديل سياسة الخصوصية لتطابق الخدمات الفعلية في التطبيق قبل وضعها في Google Play.
